@@ -15,12 +15,12 @@ replace_set = {
     "/": "Ⳇ",
     "*": "＊",
     "?": "ॽ",
-    "!": "ⵑ"
+    "|": "ǀ"
 }
 
 
 def get_original_anime_name(anime_name: str, max_results: int = 5) -> str | None:
-    print('\n' + anime_name.title())
+    print('\n' + anime_name)
 
     counter, choice = 1, 0
     results = AnimeSearch(anime_name).results
@@ -29,11 +29,15 @@ def get_original_anime_name(anime_name: str, max_results: int = 5) -> str | None
         if counter == max_results:
             break
         counter += 1
+    print("---------------------------")
+    print("M - Enter the name manually")
     print("X - Skip this folder")
 
     choice = input('> ')
     if choice == '':
         choice = 1
+    elif choice.upper() == "M":
+        return input("Enter the name: ")
     elif choice.upper() == "X":
         return None
     choice = int(choice) - 1
@@ -58,21 +62,20 @@ if __name__ == "__main__":
         # This will be the name of the anime episode, thus instead of performing a search for the directory path,
         # now performing a search for the directory name.
         name = folder.strip().rpartition('\\')[2].strip()
+        if name.index(" (") == -1:
+            print("Skipping " + folder + " as it does not match the naming convention")
+            continue
+
         prefix = name[:name.index(" (")]
         suffix = name[name.index(" ("):]
 
-        original_anime_name = get_original_anime_name(prefix, max_results=max_res).strip()
+        original_anime_name = get_original_anime_name(prefix, max_results=max_res)
         if not original_anime_name:
             print("Skipping this folder...")
             continue
-        else:
-            print("Currently selected name: " + original_anime_name)
-            is_satisfied = input("Continue with current name (Y/N)? ")
-            if is_satisfied != "y" and is_satisfied != "Y" and is_satisfied != "":
-                original_anime_name = input("Enter your preferred name: ")
 
         final_name = ""
-        for char in original_anime_name:
+        for char in original_anime_name.strip():
             replacement = replace_set.get(char, None)
             if replacement is None:
                 replacement = char
