@@ -62,12 +62,13 @@ if __name__ == "__main__":
         # This will be the name of the anime episode, thus instead of performing a search for the directory path,
         # now performing a search for the directory name.
         name = folder.strip().rpartition('\\')[2].strip()
-        if name.index(" (") == -1:
+
+        try:
+            prefix = name[:name.index(" (")]
+            suffix = name[name.index(" ("):]
+        except ValueError:
             print("Skipping " + folder + " as it does not match the naming convention")
             continue
-
-        prefix = name[:name.index(" (")]
-        suffix = name[name.index(" ("):]
 
         original_anime_name = get_original_anime_name(prefix, max_results=max_res)
         if not original_anime_name:
